@@ -22,6 +22,8 @@ namespace PricingContext
         {
             _jobMatchingContext = messageBus.OpenTopic("JobMatchingContext");
             _jobMatchingContext.Subscribe(this);
+
+            _pricingContext = messageBus.OpenTopic("PricingContext");
         }
 
         public void Handle(Message message)
