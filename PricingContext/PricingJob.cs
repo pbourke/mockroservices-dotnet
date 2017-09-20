@@ -9,13 +9,18 @@ using VaughnVernon.Mockroservices;
 
 namespace PricingContext
 {
-    public class Job : EventSourcedRootEntity
+    public class PricingJob : EventSourcedRootEntity
     {
         public Guid JobId { get; private set; }
 
         public int PriceScore { get; private set; }
 
-        public Job(List<IDomainEvent> stream, int streamVersion) : base(stream, streamVersion)
+        public PricingJob(Guid jobId)
+        {
+            Apply(new PricingJobCreated(jobId));
+        }
+
+        public PricingJob(List<IDomainEvent> stream, int streamVersion) : base(stream, streamVersion)
         {
         }
 
@@ -26,6 +31,11 @@ namespace PricingContext
                 new Random(DateTime.Now.GetHashCode()).Next(-1, 1)));
         }
 
+        public void When(PricingJobCreated pricingJobCreated)
+        {
+            JobId = pricingJobCreated.JobId;
+        }
+
         public void When(JobProposalPriceScored jobProposalPriceScored)
         {
             this.PriceScore = jobProposalPriceScored.Score;
@@ -33,7 +43,7 @@ namespace PricingContext
 
         public override bool Equals(object obj)
         {
-            var otherJob = obj as Job;
+            var otherJob = obj as PricingJob;
 
             if (otherJob == null)
             {

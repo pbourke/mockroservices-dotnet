@@ -43,6 +43,7 @@ namespace VaughnVernon.Mockroservices
         }
 
         protected EventSourcedRootEntity(List<IDomainEvent> stream, int streamVersion)
+            : this()
         {
             foreach (IDomainEvent domainEvent in stream)
             {

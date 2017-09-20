@@ -29,5 +29,29 @@ namespace ApplicationTests
 
             Assert.AreEqual(readJob, savedJob);
         }
+
+        [TestMethod]
+        public void NewJobEmittedShouldInitiateWorkflow()
+        {
+            var savedJob = new Job(new DateTime(2017, 12, 1), new MonetaryValue(500), "flooring");
+            var repository = new Repository<Job>();
+            repository.Save(savedJob, savedJob.JobId.ToString());
+
+            var messageBus = MessageBus.Start("Test");
+            var pricingCoord = new PricingContext.JobPriceScoringWorkflowCoordinator();
+            pricingCoord.Subscribe(messageBus);
+
+            var matchingCoord = new JobMatchingContext.JobWorkflowCoordinator();
+            matchingCoord.Subscribe(messageBus);
+
+            var topic = messageBus.OpenTopic("JobMatchingContext");
+            foreach (var @event in savedJob.MutatingEvents)
+            {
+                var payload = Serialization.Serialize(@event);
+                topic.Publish(new Message(Guid.NewGuid().ToString(), @event.GetType().Name, payload));
+            }
+
+            Thread.Sleep(60000);
+        }
     }
 }

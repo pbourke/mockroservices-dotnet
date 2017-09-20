@@ -44,6 +44,7 @@
     <Compile Include="Events\JobProposalFinalized.cs" />
     <Compile Include="Events\JobProposalPriceScored.cs" />
     <Compile Include="Events\JobProposed.cs" />
+    <Compile Include="Events\PricingJobCreated.cs" />
     <Compile Include="Events\ProvidersMatchedToJob.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="ValueTypes\MonetaryValue.cs" />

@@ -14,10 +14,6 @@ namespace PricingContext
         private Topic _jobMatchingContext;
         private Topic _pricingContext;
 
-        public JobPriceScoringWorkflowCoordinator(MessageBus messageBus)
-        {
-        }
-
         public void Subscribe(MessageBus messageBus)
         {
             _jobMatchingContext = messageBus.OpenTopic("JobMatchingContext");
@@ -41,9 +37,9 @@ namespace PricingContext
         {
             var jobProposed = Serialization.Deserialize<JobProposed>(messagePayload);
 
-            var repository = new Repository<Job>();
+            var repository = new Repository<PricingJob>();
 
-            var job = repository.Read(jobProposed.JobId.ToString());
+            var job = repository.Read(jobProposed.JobId.ToString()) ?? new PricingJob(jobProposed.JobId);
 
             job.ScorePrice(jobProposed.TargetPrice);
             
