@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Common;
 using Common.Events;
 using VaughnVernon.Mockroservices;
 
@@ -10,29 +11,77 @@ namespace JobMatchingContext
 {
     public class Job : EventSourcedRootEntity
     {
-        public string JobId { get; }
+        public DateTime TargetCompletionDate { get; private set; }
 
-        protected Job(List<IDomainEvent> stream, int streamVersion) : base(stream, streamVersion)
+        public MonetaryValue TargetPrice { get; private set; }
+
+        public string JobType { get; private set; }
+
+        public Guid JobId { get; private set; }
+
+        public int PriceScore { get; private set; }
+
+        public List<Guid> BidsRequestedFromProviders { get; private set; }
+
+        public Job(List<IDomainEvent> stream, int streamVersion) : base(stream, streamVersion)
         {
+        }
+
+        public Job(DateTime targetCompletionDate, MonetaryValue targetPrice, string jobType)
+        {
+            Apply(new JobProposed(Guid.NewGuid(), targetCompletionDate, targetPrice, jobType));
+        }
+
+        public void When(JobProposed jobProposedEvent)
+        {
+            JobId = jobProposedEvent.JobId;
+            TargetPrice = jobProposedEvent.TargetPrice;
+            JobType = jobProposedEvent.JobType;
+            TargetCompletionDate = jobProposedEvent.TargetCompletionDate;
+        }
+
+        public void When(JobProposalPriceScored jobProposalPriceScored)
+        {
+            PriceScore = jobProposalPriceScored.Score;
+        }
+
+        public void When(BidRequestedFromProvider bidRequestedFromProvider)
+        {
+            if (BidsRequestedFromProviders == null) BidsRequestedFromProviders = new List<Guid>();
+            if (!BidsRequestedFromProviders.Contains(bidRequestedFromProvider.ProviderId))
+            {
+                BidsRequestedFromProviders.Add(bidRequestedFromProvider.ProviderId);
+            }    
+        }
+
+        public override bool Equals(object obj)
+        {
+            var otherJob = obj as Job;
+
+            if (otherJob == null)
+            {
+                return false;
+            }
+
+            return Equals(this.JobId, otherJob.JobId)
+                && Equals(this.JobType, otherJob.JobType)
+                && Equals(this.TargetCompletionDate, otherJob.TargetCompletionDate)
+                && Equals(this.TargetPrice, otherJob.TargetPrice);
         }
 
         public bool IsProposalPriceFair()
         {
-            throw new NotImplementedException(); 
+            return PriceScore > 0;
         }
 
-        public IDomainEvent FinalizeProposal()
+        public void RequestBidFromProvider(Guid providerId)
         {
-            var finalizeEvent = new JobProposalFinalized(this.JobId);
-            Apply(finalizeEvent);
-            return finalizeEvent;
+            Apply(new BidRequestedFromProvider(this.JobId, providerId));
         }
 
-        public IDomainEvent RequestBidFromProvider(string providerId)
+        public void FinalizeProposal()
         {
-            var bidRequestedEvent = new BidRequestedFromProvider(this.JobId, providerId);
-            Apply(bidRequestedEvent);
-            return bidRequestedEvent;
+            Apply(new JobProposalFinalized(this.JobId));
         }
     }
 }

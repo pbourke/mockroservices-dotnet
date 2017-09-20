@@ -40,9 +40,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Events\BidRequestedFromProvider.cs" />
+    <Compile Include="Events\JobProposalFinalized.cs" />
     <Compile Include="Events\JobProposalPriceScored.cs" />
     <Compile Include="Events\JobProposed.cs" />
     <Compile Include="Events\ProvidersMatchedToJob.cs" />
+    <Compile Include="Repository.cs" />
+    <Compile Include="ValueTypes\MonetaryValue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

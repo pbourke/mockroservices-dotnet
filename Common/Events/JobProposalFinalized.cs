@@ -12,15 +12,15 @@ namespace Common.Events
         public int EventVersion { get; }
         public DateTime OccurredOn { get; }
 
-        public string JobId { get; }
+        public Guid JobId { get; }
 
-        public JobProposalFinalized(string jobId)
+        public JobProposalFinalized(Guid jobId)
             : this(1, DateTime.UtcNow, jobId)
         {
             
         }
 
-        public JobProposalFinalized(int eventVersion, DateTime occurredOn, string jobId)
+        public JobProposalFinalized(int eventVersion, DateTime occurredOn, Guid jobId)
         {
             EventVersion = eventVersion;
             OccurredOn = occurredOn;

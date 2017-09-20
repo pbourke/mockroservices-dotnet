@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
+using Common;
 using Common.Events;
 using VaughnVernon.Mockroservices;
 
@@ -56,13 +57,18 @@ namespace JobMatchingContext
         {
             var jobProposalPriceScored = Serialization.Deserialize<JobProposalPriceScored>(messagePayload);
 
-            var job = new Job(repository.ReadEvents(jobProposalPriceScored.JobId));
+            var repository = new Repository<Job>();
+            var job = repository.Read(jobProposalPriceScored.JobId.ToString());
 
             //If this is a fair priced system
             if (job.IsProposalPriceFair())
             {
-                var events = job.FinalizeProposal();
-                Emit(events);   
+                job.FinalizeProposal();
+
+                Emit(job.MutatingEvents);
+
+                repository.Save(job, job.JobId.ToString());
+
             }
         }
 
@@ -70,7 +76,8 @@ namespace JobMatchingContext
         {
             var jobProposalFinalized = Serialization.Deserialize<JobProposalFinalized>(messagePayload);
 
-            var job = new Job(repository.ReadEvents(jobProposalPriceScored.JobId));
+            var repository = new Repository<Job>();
+            var job = repository.Read(jobProposalFinalized.JobId.ToString());
 
             var matchingSvc = new JobProviderMatchingDomainService();
             var matchingProviders = matchingSvc.MatchProvidersToJob(job);
@@ -82,20 +89,26 @@ namespace JobMatchingContext
         {
             var providersMatchedToJob = Serialization.Deserialize<ProvidersMatchedToJob>(messagePayload);
 
-            var job = new Job(repository.ReadEvents(providersMatchedToJob.JobId));
+            var repository = new Repository<Job>();
+            var job = repository.Read(providersMatchedToJob.JobId.ToString());
 
-            foreach (var providerId in providersMatchedToJob.ProviderAggregateIds)
+            foreach (var providerId in providersMatchedToJob.ProviderIds)
             {
-                Emit(job.RequestBidFromProvider(providerId));
-                
+                job.RequestBidFromProvider(providerId);                
             }
+
+            Emit(job.MutatingEvents);
+            repository.Save(job, job.JobId.ToString());
         }
 
-        protected void Emit(IDomainEvent @event)
+        protected void Emit(IEnumerable<IDomainEvent> events)
         {
-            var payload = Serialization.Serialize(@event);
-            _jobMatchingContextTopic.Publish(
-                new Message(Guid.NewGuid().ToString(), @event.GetType().Name, payload));
+            foreach (var @event in events)
+            {
+                var payload = Serialization.Serialize(@event);
+                _jobMatchingContextTopic.Publish(
+                    new Message(Guid.NewGuid().ToString(), @event.GetType().Name, payload));
+            }
         }
     }
 }

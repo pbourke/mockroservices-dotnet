@@ -9,26 +9,26 @@ namespace Common.Events
         public int EventVersion { get; }
         public DateTime OccurredOn { get; }
 
-        public string JobId { get; }
+        public Guid JobId { get; }
         /// <summary>
         /// Ideally this would be an immutable collection rather than IEnumerable, but...
         /// </summary>
-        public IEnumerable<int> ProviderAggregateIds { get; }
+        public IEnumerable<Guid> ProviderIds { get; }
 
-        public ProvidersMatchedToJob(string jobId, IEnumerable<int> providerAggregateIds)
-            : this(1, DateTime.UtcNow, jobId, providerAggregateIds)
+        public ProvidersMatchedToJob(Guid jobId, IEnumerable<Guid> providerIds)
+            : this(1, DateTime.UtcNow, jobId, providerIds)
         {
                 
         } 
 
-        public ProvidersMatchedToJob(int eventVersion, DateTime occurredOn, string jobId, IEnumerable<int> providerAggregateIds)
+        public ProvidersMatchedToJob(int eventVersion, DateTime occurredOn, Guid jobId, IEnumerable<Guid> providerIds)
         {
-            if (providerAggregateIds == null) throw new ArgumentNullException(nameof(providerAggregateIds));
+            if (providerIds == null) throw new ArgumentNullException(nameof(providerIds));
 
             EventVersion = eventVersion;
             OccurredOn = occurredOn;
             JobId = jobId;
-            ProviderAggregateIds = new List<int>(providerAggregateIds);
+            ProviderIds = new List<Guid>(providerIds);
         }
     }
 }

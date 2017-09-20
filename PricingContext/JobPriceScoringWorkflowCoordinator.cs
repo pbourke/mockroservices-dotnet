@@ -33,7 +33,7 @@ namespace PricingContext
             var jobProposed = Serialization.Deserialize<JobProposed>(messagePayload);
 
             var scoringSvc = new PriceScoringDomainService();
-            var outputEvents = scoringSvc.ScoreJobProposalPrice(jobProposed.JobId, jobProposed.Price);
+            var outputEvents = scoringSvc.ScoreJobProposalPrice(jobProposed.JobId, jobProposed.TargetPrice);
 
             Emit(outputEvents);
         }

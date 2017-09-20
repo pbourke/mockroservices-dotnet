@@ -13,17 +13,17 @@ namespace JobMatchingContext
 
         public DateTime OccurredOn { get; }
 
-        public string JobId { get; }
+        public Guid JobId { get; }
 
-        public string ProviderId { get; }
+        public Guid ProviderId { get; }
 
-        public BidRequestedFromProvider(string jobId, string providerId)
+        public BidRequestedFromProvider(Guid jobId, Guid providerId)
             : this (1, DateTime.UtcNow, jobId, providerId)
         {
             
         }
 
-        public BidRequestedFromProvider(int eventVersion, DateTime occurredOn, string jobId, string providerId)
+        public BidRequestedFromProvider(int eventVersion, DateTime occurredOn, Guid jobId, Guid providerId)
         {
             EventVersion = eventVersion;
             OccurredOn = occurredOn;

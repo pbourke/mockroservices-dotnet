@@ -14,18 +14,18 @@ namespace JobMatchingContext
         {
             //Always the same ones
             return new [] {
-                new ProvidersMatchedToJob(new []
+                new ProvidersMatchedToJob(job.JobId, new []
                 {
-                    12,
-                    976,
-                    1232,
-                    9876,
-                    2183,
-                    92372,
-                    543,
-                    754,
-                    5103,
-                    923
+                    Guid.NewGuid(),
+                    Guid.NewGuid(),
+                    Guid.NewGuid(),
+                    Guid.NewGuid(),
+                    Guid.NewGuid(),
+                    Guid.NewGuid(),
+                    Guid.NewGuid(),
+                    Guid.NewGuid(),
+                    Guid.NewGuid(),
+                    Guid.NewGuid()
                 })
            };
         }
