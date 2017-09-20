@@ -50,11 +50,17 @@
   <ItemGroup>
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="JobAggregateEventsTest.cs" />
+    <Compile Include="Utils\CollectMessagesSubscriber.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{6E1C2FBF-6466-44A1-94B5-F99615660FA9}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\JobMatchingContext\JobMatchingContext.csproj">
       <Project>{a93b8869-e737-4ce2-8e9b-64523f255c73}</Project>
       <Name>JobMatchingContext</Name>
