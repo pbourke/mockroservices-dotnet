@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Common;
 using Common.Events;
 using VaughnVernon.Mockroservices;
 
@@ -10,11 +11,17 @@ namespace PricingContext
 {
     public class JobPriceScoringWorkflowCoordinator : ISubscriber
     {
-        private MessageBus MessageBus { get; }
+        private Topic _jobMatchingContext;
+        private Topic _pricingContext;
 
         public JobPriceScoringWorkflowCoordinator(MessageBus messageBus)
         {
-            MessageBus = messageBus;
+        }
+
+        public void Subscribe(MessageBus messageBus)
+        {
+            _jobMatchingContext = messageBus.OpenTopic("JobMatchingContext");
+            _jobMatchingContext.Subscribe(this);
         }
 
         public void Handle(Message message)
@@ -32,20 +39,23 @@ namespace PricingContext
         {
             var jobProposed = Serialization.Deserialize<JobProposed>(messagePayload);
 
-            var scoringSvc = new PriceScoringDomainService();
-            var outputEvents = scoringSvc.ScoreJobProposalPrice(jobProposed.JobId, jobProposed.TargetPrice);
+            var repository = new Repository<Job>();
 
-            Emit(outputEvents);
+            var job = repository.Read(jobProposed.JobId.ToString());
+
+            job.ScorePrice(jobProposed.TargetPrice);
+            
+            Emit(job.MutatingEvents);
+
+            repository.Save(job, job.JobId.ToString());
         }
 
         protected void Emit(IEnumerable<IDomainEvent> events)
         {
-            var topic = MessageBus.OpenTopic("PricingContext");
-
             foreach (var @event in events)
             {
                 var payload = Serialization.Serialize(@event);
-                topic.Publish(new Message(Guid.NewGuid().ToString(), @event.GetType().Name, payload));
+                _pricingContext.Publish(new Message(Guid.NewGuid().ToString(), @event.GetType().Name, payload));
             }
         }
 

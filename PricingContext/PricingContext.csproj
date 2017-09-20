@@ -40,9 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Job.cs" />
     <Compile Include="JobPriceScoringWorkflowCoordinator.cs" />
-    <Compile Include="JobScored.cs" />
-    <Compile Include="PriceScoringDomainService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
