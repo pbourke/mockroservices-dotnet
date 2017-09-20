@@ -41,9 +41,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="JobScored.cs" />
+    <Compile Include="PriceScoringDomainService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{6e1c2fbf-6466-44a1-94b5-f99615660fa9}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\mockroservices-dotnet\mockroservices-dotnet.csproj">
       <Project>{6881b4eb-0fdd-482b-b740-6d6ba2566406}</Project>
       <Name>mockroservices-dotnet</Name>
