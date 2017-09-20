@@ -10,12 +10,12 @@ namespace PricingContext
 {
     public class PriceScoringDomainService
     {
-        public IEnumerable<IDomainEvent> ScoreJobProposalPrice(Guid jobId, double price)
+        public IEnumerable<IDomainEvent> ScoreJobProposalPrice(string jobId, double price)
         {
             var random = new Random(DateTime.Now.GetHashCode());
             return new[]
             {
-                new JobProposalPriceScored(random.Next(-1, 1))
+                new JobProposalPriceScored(jobId, random.Next(-1, 1))
             };
         }
     }

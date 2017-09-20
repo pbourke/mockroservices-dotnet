@@ -5,27 +5,31 @@ using System.Text;
 using System.Threading.Tasks;
 using VaughnVernon.Mockroservices;
 
-namespace Common.Events
+namespace JobMatchingContext
 {
-    public class JobProposalPriceScored : IDomainEvent
+    public class BidRequestedFromProvider : IDomainEvent
     {
         public int EventVersion { get; }
-        public DateTime OccurredOn { get; }
-        public string JobId { get; }
-        public int Score { get; }
 
-        public JobProposalPriceScored(string jobId, int score)
-            : this(1, DateTime.UtcNow, jobId, score)
+        public DateTime OccurredOn { get; }
+
+        public string JobId { get; }
+
+        public string ProviderId { get; }
+
+        public BidRequestedFromProvider(string jobId, string providerId)
+            : this (1, DateTime.UtcNow, jobId, providerId)
         {
             
         }
 
-        public JobProposalPriceScored(int eventVersion, DateTime occurredOn, string jobId, int score)
+        public BidRequestedFromProvider(int eventVersion, DateTime occurredOn, string jobId, string providerId)
         {
             EventVersion = eventVersion;
             OccurredOn = occurredOn;
             JobId = jobId;
-            Score = score;
+            ProviderId = providerId;
         }
+
     }
 }
